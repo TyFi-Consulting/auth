@@ -1,0 +1,11 @@
+bin/
+obj/
+artifacts/
+*.user
+.vs/
+.idea/
+*.nupkg
+*.snupkg
+
+# Function app local secrets — never commit
+local.settings.json
