@@ -1,34 +1,28 @@
 # auth
 
 TyFi Consulting's shared authentication infrastructure: Microsoft Entra External ID tenant
-provisioning ([scripts/setup-tenant.sh](scripts/setup-tenant.sh)), the Maileroo OTP-sender
-Azure Function, and the `TyFi.Auth` NuGet package family. See
-[NEW_LLM_PROMPT.md](NEW_LLM_PROMPT.md) for the full migration plan.
+provisioning ([scripts/setup-tenant.sh](scripts/setup-tenant.sh)) and the `TyFi.Auth` NuGet
+package family.
+
+## Packages
+
+| Package | Purpose |
+|---|---|
+| [`TyFi.Auth.Abstractions`](src/TyFi.Auth.Abstractions) | `AuthenticatedUser`, `IBearerTokenAuthenticator`, claim-mapping options. No OIDC or hosting code. |
+| [`TyFi.Auth.Jwt`](src/TyFi.Auth.Jwt) | Provider-agnostic OIDC/JWT validation (cached JWKS, RS256-only) — Auth0 vs. Entra is config-only. |
+| [`TyFi.Auth.Functions.Worker`](src/TyFi.Auth.Functions.Worker) | Isolated-worker middleware for the built-in HTTP model. |
+| [`TyFi.Auth.Functions.AspNetCore`](src/TyFi.Auth.Functions.AspNetCore) | Isolated-worker middleware for the ASP.NET Core integration HTTP model. |
+| [`TyFi.Auth.EntraExternalId`](src/TyFi.Auth.EntraExternalId) | The `OnOtpSend` custom authentication extension endpoint + Maileroo sender, hosted by each project's own Function app. |
+
+See [docs/INTEGRATION.md](docs/INTEGRATION.md) for wiring instructions and
+[docs/PUBLISHING.md](docs/PUBLISHING.md) for the NuGet release process.
+
+```bash
+dotnet test TyFi.Auth.sln   # build + run all unit tests
+```
 
 ## Tenants
 
-| Project | Tenant name | Tenant ID | Resource group | Subscription |
-|---|---|---|---|---|
-| therapy-scheduling-manager | `tyfischeduler` | `e748122c-ff6e-4759-a0e3-26b5ad5adc07` | `rg-therapy-scheduling` | Pay-As-You-Go (`91e2998a-d362-4ac4-bc91-4f52bfc7483b`) |
-
-- Default domain: `<tenant name>.onmicrosoft.com`
-- Login domain (used as the OIDC authority): `<tenant name>.ciamlogin.com`
-- Admin center: `https://entra.microsoft.com/<tenant ID>`
-
-> New tenants are created into the **existing resource group of the project they belong
-> to** (not a new `rg-tyfi-auth-*` group), so they show up alongside that project's other
-> Azure resources.
-
-## apps/otp-mailer
-
-A .NET 10 isolated-worker Azure Function implementing the `OnOtpSend` custom authentication
-extension callback: validates the Entra-issued bearer token per tenant, then sends the one-time
-passcode through [Maileroo](https://maileroo.com) instead of Microsoft's default email provider.
-One Function App serves all four tenants (config keyed by tenant ID). See
-[docs/TENANT_SETUP.md](docs/TENANT_SETUP.md) for per-tenant wiring steps and the configuration
-shape, and [apps/otp-mailer](apps/otp-mailer) for the source.
-
-```bash
-cd apps/otp-mailer
-dotnet test   # build + run all unit tests
-```
+Tenant IDs, subscriptions, and resource groups are tracked privately (not in this public repo).
+See [docs/TENANT_SETUP.md](docs/TENANT_SETUP.md) for the reusable per-tenant `OnOtpSend` wiring
+steps.

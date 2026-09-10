@@ -1,0 +1,8 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>TyFi.Auth.Abstractions</PackageId>
+    <Description>Provider-agnostic authentication abstractions: AuthenticatedUser, IBearerTokenAuthenticator, BearerTokenAuthenticationResult, and claim-mapping options. No OIDC/JWT or hosting-specific code -- reference a validator and a host-adapter package alongside this one.</Description>
+  </PropertyGroup>
+
+</Project>

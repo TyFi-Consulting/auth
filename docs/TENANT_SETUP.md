@@ -1,14 +1,19 @@
 # Per-tenant setup: Email OTP + custom Maileroo sender
 
-Steps to wire a new Entra External ID tenant to the `TyFi.Auth.OtpMailer` Azure Function so OTP
+Steps to wire a new Entra External ID tenant to a project-hosted `OnOtpSend` endpoint so OTP
 emails are sent via Maileroo instead of Microsoft's default provider. Repeat once per tenant
 (therapy-scheduling-manager, tab-cloud, stock-tracker, workout-app).
+
+> **Architecture (2026-09-10):** each project's own Function app hosts its tenant's OTP endpoint
+> via the `TyFi.Auth.EntraExternalId` package. The Target URL in step 2 is therefore that project's
+> Function app, and the configuration below applies to that app's settings — one tenant per app,
+> so there is no tenant list/dictionary to index into.
 
 ## Prerequisites
 
 - The tenant exists (`scripts/setup-tenant.sh`, recorded in the [README](../README.md#tenants)).
-- `apps/otp-mailer` is deployed to an Azure Function App reachable over HTTPS (one Function App can
-  serve all tenants; see [Configuration](#configuration) for the per-tenant settings shape).
+- The project's Function app hosts the `OnOtpSend` endpoint (via `TyFi.Auth.EntraExternalId`) and is
+  reachable over HTTPS.
 
 ## 1. Enable the Email One-Time Passcode sign-up/sign-in user flow
 
@@ -33,27 +38,26 @@ In the [Entra admin center](https://entra.microsoft.com) for the tenant: **Exter
 
 ## 3. Configuration
 
-Add an entry per tenant to the Function App's settings (or `local.settings.json` locally). Two
-independent sections — auth (who's allowed to call us) and mail (how we send for that tenant):
+Add these settings to the project's Function App settings (or `local.settings.json` locally). Two
+independent sections — auth (who's allowed to call us) and mail (how we send):
 
 ```jsonc
 {
-  "OtpMailerAuth:Tenants:0:TenantId": "<tenant-guid>",
-  "OtpMailerAuth:Tenants:0:Issuer": "https://<tenant-name>.ciamlogin.com/<tenant-guid>/v2.0",
-  "OtpMailerAuth:Tenants:0:Audience": "<custom-extension-app-client-id-from-step-2>",
+  "Auth:EntraOtpSend:Issuer": "https://<tenant-name>.ciamlogin.com/<tenant-guid>/v2.0",
+  "Auth:EntraOtpSend:Audience": "<custom-extension-app-client-id-from-step-2>",
 
-  "Maileroo:Tenants:<tenant-guid>:ApiKey": "<maileroo-sending-key>",
-  "Maileroo:Tenants:<tenant-guid>:FromAddress": "noreply@<project-domain>",
-  "Maileroo:Tenants:<tenant-guid>:FromDisplayName": "<Project Display Name>",
-  "Maileroo:Tenants:<tenant-guid>:Subject": "Your verification code"
+  "Maileroo:ApiKey": "<maileroo-sending-key>",
+  "Maileroo:FromAddress": "noreply@<project-domain>",
+  "Maileroo:FromDisplayName": "<Project Display Name>",
+  "Maileroo:Subject": "Your verification code"
 }
 ```
 
 The `Audience` claim check, `Issuer` claim check, and the fixed Microsoft caller-client-id check
 (`azp`/`appid` == `99045fe1-7639-4a75-9d4a-577b6ca3810f`) are all enforced by
-[`EntraCustomExtensionTokenValidator`](../apps/otp-mailer/src/TyFi.Auth.OtpMailer/Auth/EntraCustomExtensionTokenValidator.cs)
-before any email is sent — an unrecognized tenant or wrong caller is rejected with 401 and no
-Maileroo call is made.
+[`EntraOtpSendCallbackValidator`](../src/TyFi.Auth.EntraExternalId/EntraOtpSendCallbackValidator.cs)
+before any email is sent — an invalid or wrong caller is rejected with 401 and no Maileroo call is
+made. See [INTEGRATION.md](INTEGRATION.md) for the DI registration and the required trigger stub.
 
 ## 4. Fallback behavior on error (optional)
 

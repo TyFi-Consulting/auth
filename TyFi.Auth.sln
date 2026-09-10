@@ -1,0 +1,92 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{91E9DC8E-6166-416B-B34F-9F5BA734E6F6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TyFi.Auth.Abstractions", "src\TyFi.Auth.Abstractions\TyFi.Auth.Abstractions.csproj", "{C07E3E20-1E99-4F81-95DA-0384E0C2F9F1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TyFi.Auth.Jwt", "src\TyFi.Auth.Jwt\TyFi.Auth.Jwt.csproj", "{05DC54B1-E989-4A12-9424-EC23836177B1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TyFi.Auth.Functions.Worker", "src\TyFi.Auth.Functions.Worker\TyFi.Auth.Functions.Worker.csproj", "{B01BC81F-68D6-48C1-A175-DF368C7FD897}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TyFi.Auth.Functions.AspNetCore", "src\TyFi.Auth.Functions.AspNetCore\TyFi.Auth.Functions.AspNetCore.csproj", "{64A6328B-B18F-437A-B08C-DC36B382D292}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TyFi.Auth.EntraExternalId", "src\TyFi.Auth.EntraExternalId\TyFi.Auth.EntraExternalId.csproj", "{1FB53F08-73A9-41F3-B909-0BE9510C187C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{122A28E2-3B8B-42B8-9984-3710F03A1E2C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TyFi.Auth.Abstractions.Tests", "tests\TyFi.Auth.Abstractions.Tests\TyFi.Auth.Abstractions.Tests.csproj", "{F169B640-4A30-4FD9-804C-ECAFAA639777}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TyFi.Auth.Jwt.Tests", "tests\TyFi.Auth.Jwt.Tests\TyFi.Auth.Jwt.Tests.csproj", "{86484EA8-A0AC-4989-B0C8-D3D4D168FDC7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TyFi.Auth.Functions.Worker.Tests", "tests\TyFi.Auth.Functions.Worker.Tests\TyFi.Auth.Functions.Worker.Tests.csproj", "{EB20DA6D-0F3B-45D2-9516-F1DBC2B69499}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TyFi.Auth.Functions.AspNetCore.Tests", "tests\TyFi.Auth.Functions.AspNetCore.Tests\TyFi.Auth.Functions.AspNetCore.Tests.csproj", "{BEC9DAB4-2A88-4293-A4A9-C76AEC9A9D33}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TyFi.Auth.EntraExternalId.Tests", "tests\TyFi.Auth.EntraExternalId.Tests\TyFi.Auth.EntraExternalId.Tests.csproj", "{5CDCF164-701D-40BA-8406-64189FDED8FC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C07E3E20-1E99-4F81-95DA-0384E0C2F9F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C07E3E20-1E99-4F81-95DA-0384E0C2F9F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C07E3E20-1E99-4F81-95DA-0384E0C2F9F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C07E3E20-1E99-4F81-95DA-0384E0C2F9F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05DC54B1-E989-4A12-9424-EC23836177B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05DC54B1-E989-4A12-9424-EC23836177B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05DC54B1-E989-4A12-9424-EC23836177B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05DC54B1-E989-4A12-9424-EC23836177B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B01BC81F-68D6-48C1-A175-DF368C7FD897}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B01BC81F-68D6-48C1-A175-DF368C7FD897}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B01BC81F-68D6-48C1-A175-DF368C7FD897}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B01BC81F-68D6-48C1-A175-DF368C7FD897}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64A6328B-B18F-437A-B08C-DC36B382D292}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64A6328B-B18F-437A-B08C-DC36B382D292}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64A6328B-B18F-437A-B08C-DC36B382D292}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64A6328B-B18F-437A-B08C-DC36B382D292}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FB53F08-73A9-41F3-B909-0BE9510C187C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FB53F08-73A9-41F3-B909-0BE9510C187C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FB53F08-73A9-41F3-B909-0BE9510C187C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FB53F08-73A9-41F3-B909-0BE9510C187C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F169B640-4A30-4FD9-804C-ECAFAA639777}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F169B640-4A30-4FD9-804C-ECAFAA639777}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F169B640-4A30-4FD9-804C-ECAFAA639777}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F169B640-4A30-4FD9-804C-ECAFAA639777}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86484EA8-A0AC-4989-B0C8-D3D4D168FDC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86484EA8-A0AC-4989-B0C8-D3D4D168FDC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86484EA8-A0AC-4989-B0C8-D3D4D168FDC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86484EA8-A0AC-4989-B0C8-D3D4D168FDC7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB20DA6D-0F3B-45D2-9516-F1DBC2B69499}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB20DA6D-0F3B-45D2-9516-F1DBC2B69499}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB20DA6D-0F3B-45D2-9516-F1DBC2B69499}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB20DA6D-0F3B-45D2-9516-F1DBC2B69499}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BEC9DAB4-2A88-4293-A4A9-C76AEC9A9D33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEC9DAB4-2A88-4293-A4A9-C76AEC9A9D33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BEC9DAB4-2A88-4293-A4A9-C76AEC9A9D33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BEC9DAB4-2A88-4293-A4A9-C76AEC9A9D33}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5CDCF164-701D-40BA-8406-64189FDED8FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CDCF164-701D-40BA-8406-64189FDED8FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5CDCF164-701D-40BA-8406-64189FDED8FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CDCF164-701D-40BA-8406-64189FDED8FC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C07E3E20-1E99-4F81-95DA-0384E0C2F9F1} = {91E9DC8E-6166-416B-B34F-9F5BA734E6F6}
+		{05DC54B1-E989-4A12-9424-EC23836177B1} = {91E9DC8E-6166-416B-B34F-9F5BA734E6F6}
+		{B01BC81F-68D6-48C1-A175-DF368C7FD897} = {91E9DC8E-6166-416B-B34F-9F5BA734E6F6}
+		{64A6328B-B18F-437A-B08C-DC36B382D292} = {91E9DC8E-6166-416B-B34F-9F5BA734E6F6}
+		{1FB53F08-73A9-41F3-B909-0BE9510C187C} = {91E9DC8E-6166-416B-B34F-9F5BA734E6F6}
+		{F169B640-4A30-4FD9-804C-ECAFAA639777} = {122A28E2-3B8B-42B8-9984-3710F03A1E2C}
+		{86484EA8-A0AC-4989-B0C8-D3D4D168FDC7} = {122A28E2-3B8B-42B8-9984-3710F03A1E2C}
+		{EB20DA6D-0F3B-45D2-9516-F1DBC2B69499} = {122A28E2-3B8B-42B8-9984-3710F03A1E2C}
+		{BEC9DAB4-2A88-4293-A4A9-C76AEC9A9D33} = {122A28E2-3B8B-42B8-9984-3710F03A1E2C}
+		{5CDCF164-701D-40BA-8406-64189FDED8FC} = {122A28E2-3B8B-42B8-9984-3710F03A1E2C}
+	EndGlobalSection
+EndGlobal

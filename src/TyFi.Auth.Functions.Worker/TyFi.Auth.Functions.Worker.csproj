@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>TyFi.Auth.Functions.Worker</PackageId>
+    <Description>Azure Functions isolated-worker (built-in HTTP model) middleware: resolves [Authorize]/[AllowAnonymous] per function (fail-closed on missing policy), reads the bearer token, authenticates via IBearerTokenAuthenticator, and exposes FunctionContext.GetAuthenticatedUser().</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="1.19.0" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http" Version="3.3.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="8.0.11" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TyFi.Auth.Abstractions\TyFi.Auth.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

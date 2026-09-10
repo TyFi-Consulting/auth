@@ -1,8 +1,0 @@
-<Solution>
-  <Folder Name="/src/">
-    <Project Path="src/TyFi.Auth.OtpMailer/TyFi.Auth.OtpMailer.csproj" />
-  </Folder>
-  <Folder Name="/tests/">
-    <Project Path="tests/TyFi.Auth.OtpMailer.Tests/TyFi.Auth.OtpMailer.Tests.csproj" />
-  </Folder>
-</Solution>

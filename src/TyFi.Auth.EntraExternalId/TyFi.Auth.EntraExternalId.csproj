@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>TyFi.Auth.EntraExternalId</PackageId>
+    <Description>Entra External ID OnOtpSend custom authentication extension building block: callback-token validation (fail closed), payload/response models, and a Maileroo email sender, wired up with one DI call. The email template/copy stays consumer-owned via IOtpEmailBodyRenderer.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Maileroo.DotNet.SDK" Version="1.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TyFi.Auth.Jwt\TyFi.Auth.Jwt.csproj" />
+  </ItemGroup>
+
+</Project>

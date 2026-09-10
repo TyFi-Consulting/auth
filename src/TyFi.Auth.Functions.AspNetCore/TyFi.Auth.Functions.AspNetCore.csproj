@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>TyFi.Auth.Functions.AspNetCore</PackageId>
+    <Description>Middleware for Azure Functions isolated worker using the ASP.NET Core integration HTTP model (ConfigureFunctionsWebApplication; HttpRequest/IActionResult triggers). Enforces [Authorize]/[AllowAnonymous] and exposes HttpContext.GetAuthenticatedUser().</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http.AspNetCore" Version="2.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TyFi.Auth.Functions.Worker\TyFi.Auth.Functions.Worker.csproj" />
+  </ItemGroup>
+
+</Project>
