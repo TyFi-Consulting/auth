@@ -11,7 +11,7 @@ public sealed class OnOtpSendRequestHandlerTests
     private static Stream RequestBody(string identifier, string oneTimeCode) =>
         new MemoryStream(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new
         {
-            data = new { otpContext = new { identifier, onetimecode = oneTimeCode } },
+            data = new { otpContext = new { identifier, oneTimeCode } },
         })));
 
     private static OnOtpSendRequestHandler CreateHandler(

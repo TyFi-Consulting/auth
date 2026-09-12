@@ -82,9 +82,3 @@ Content-type: application/json
 Open a private browser window and sign in through the tenant's authorize endpoint using an Email
 OTP account; confirm the code arrives from the project's own Maileroo-verified domain rather than a
 Microsoft default sender address.
-
-## Per-tenant log
-
-| Tenant | Custom extension app (Audience) client ID | Notes |
-|---|---|---|
-| therapy-scheduling-manager (`tyfischeduler`) | _pending — steps 1–2 not yet performed_ | |
