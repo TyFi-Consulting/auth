@@ -21,6 +21,23 @@ See [docs/INTEGRATION.md](docs/INTEGRATION.md) for wiring instructions and
 dotnet test TyFi.Auth.sln   # build + run all unit tests
 ```
 
+## Release
+
+After the release changes are merged to `main`, tag that commit and push the tag. The tag triggers
+the GitHub Actions release workflow, which publishes every `TyFi.Auth.*` package at that version.
+
+```bash
+git switch main
+git pull --ff-only origin main
+git tag -a v0.1.1 -m "Release v0.1.1"
+git push origin v0.1.1
+gh run watch
+```
+
+Replace `0.1.1` with the intended semantic version. See
+[docs/PUBLISHING.md](docs/PUBLISHING.md) for the one-time NuGet trusted-publishing setup and
+troubleshooting.
+
 ## Tenants
 
 Tenant IDs, subscriptions, and resource groups are tracked privately (not in this public repo).

@@ -10,7 +10,7 @@ public sealed class EntraOtpSendOptions
     /// <summary>The configuration section name this options type binds to.</summary>
     public const string SectionName = "Auth:EntraOtpSend";
 
-    /// <summary>The expected `iss` claim: "https://{domain}.ciamlogin.com/{tenantId}/v2.0".</summary>
+    /// <summary>The expected `iss` claim: "https://{tenantId}.ciamlogin.com/{tenantId}/v2.0".</summary>
     public string? Issuer { get; set; }
 
     /// <summary>The expected `aud` claim: this tenant's "Azure Functions authentication events API" app registration's client ID.</summary>

@@ -26,6 +26,6 @@ public sealed class OtpContext
     public string? Identifier { get; init; }
 
     /// <summary>The one-time passcode to send.</summary>
-    [JsonPropertyName("onetimecode")]
+    [JsonPropertyName("oneTimeCode")]
     public string? OneTimeCode { get; init; }
 }

@@ -65,7 +65,7 @@ Config:
 
 ```jsonc
 {
-  "Auth:EntraOtpSend:Issuer": "https://{tenant}.ciamlogin.com/{tenantId}/v2.0",
+  "Auth:EntraOtpSend:Issuer": "https://{tenantId}.ciamlogin.com/{tenantId}/v2.0",
   "Auth:EntraOtpSend:Audience": "<custom-extension-app-registration-client-id>",
 
   "Maileroo:ApiKey": "<sending-key>",
