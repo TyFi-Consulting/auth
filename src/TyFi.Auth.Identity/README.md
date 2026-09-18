@@ -52,6 +52,19 @@ source control):
 }
 ```
 
+Issued access tokens are signed HS256 JWTs with a symmetric key -- they have no discovery document or
+JWKS endpoint. To validate them with `TyFi.Auth.Jwt`, point it at the *same* signing key via its static-key
+mode instead of the default OIDC-discovery path (see [`TyFi.Auth.Jwt`'s README](../TyFi.Auth.Jwt/README.md)):
+
+```jsonc
+{
+  "Auth:Jwt:Issuer": "https://your-app",
+  "Auth:Jwt:Audience": "api://your-app-id",
+  "Auth:Jwt:SigningKey": "<the same value as Auth:Identity:SigningKey above>",
+  "Auth:Jwt:ValidAlgorithms:0": "HS256"
+}
+```
+
 Call `IAuthenticationService` from your Function app's login/register/logout endpoints. The library never
 touches your request/response shape -- your endpoint owns deserialization and the response body entirely;
 `AuthOutcomeStatusCodes` just saves you from re-deriving the same outcome-to-HTTP-status mapping in every

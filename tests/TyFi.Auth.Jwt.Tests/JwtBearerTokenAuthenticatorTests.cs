@@ -152,5 +152,81 @@ public sealed class JwtBearerTokenAuthenticatorTests : IDisposable
         Assert.Equal("Token has no subject.", result.FailureReason);
     }
 
+    [Fact]
+    public async Task AuthenticateAsync_Succeeds_ForStaticSymmetricKey_WithoutCallingConfigurationCache()
+    {
+        const string issuer = "https://self-issued.example/";
+        const string audience = "api://self";
+        var keyBytes = new byte[32];
+        RandomNumberGenerator.Fill(keyBytes);
+        var signingKey = Convert.ToBase64String(keyBytes);
+
+        var handler = new JsonWebTokenHandler();
+        var descriptor = new SecurityTokenDescriptor
+        {
+            Issuer = issuer,
+            Audience = audience,
+            Claims = new Dictionary<string, object> { ["sub"] = "user-1", ["roles"] = new[] { "Admin" } },
+            Expires = DateTime.UtcNow.AddMinutes(5),
+            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(keyBytes), SecurityAlgorithms.HmacSha256),
+        };
+        var token = handler.CreateToken(descriptor);
+
+        var options = Options.Create(new JwtBearerTokenAuthenticatorOptions
+        {
+            Issuer = issuer,
+            Audience = audience,
+            ValidAlgorithms = ["HS256"],
+            SigningKey = signingKey,
+        });
+        var configCache = new Mock<IOpenIdConnectConfigurationCache>(MockBehavior.Strict);
+        var authenticator = new JwtBearerTokenAuthenticator(
+            options, new AuthorizationHeaderParser(), configCache.Object, NullLogger<JwtBearerTokenAuthenticator>.Instance);
+
+        var result = await authenticator.AuthenticateAsync($"Bearer {token}", CancellationToken.None);
+
+        Assert.True(result.IsAuthenticated);
+        Assert.Equal("user-1", result.User!.Subject);
+        Assert.Equal(["Admin"], result.User.Roles);
+        configCache.VerifyNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task AuthenticateAsync_Fails_ForStaticSymmetricKey_WhenSignedWithADifferentKey()
+    {
+        const string issuer = "https://self-issued.example/";
+        const string audience = "api://self";
+        var signingKeyBytes = new byte[32];
+        RandomNumberGenerator.Fill(signingKeyBytes);
+        var wrongKeyBytes = new byte[32];
+        RandomNumberGenerator.Fill(wrongKeyBytes);
+
+        var handler = new JsonWebTokenHandler();
+        var descriptor = new SecurityTokenDescriptor
+        {
+            Issuer = issuer,
+            Audience = audience,
+            Claims = new Dictionary<string, object> { ["sub"] = "user-1" },
+            Expires = DateTime.UtcNow.AddMinutes(5),
+            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(wrongKeyBytes), SecurityAlgorithms.HmacSha256),
+        };
+        var token = handler.CreateToken(descriptor);
+
+        var options = Options.Create(new JwtBearerTokenAuthenticatorOptions
+        {
+            Issuer = issuer,
+            Audience = audience,
+            ValidAlgorithms = ["HS256"],
+            SigningKey = Convert.ToBase64String(signingKeyBytes),
+        });
+        var authenticator = new JwtBearerTokenAuthenticator(
+            options, new AuthorizationHeaderParser(), Mock.Of<IOpenIdConnectConfigurationCache>(), NullLogger<JwtBearerTokenAuthenticator>.Instance);
+
+        var result = await authenticator.AuthenticateAsync($"Bearer {token}", CancellationToken.None);
+
+        Assert.False(result.IsAuthenticated);
+        Assert.Equal("Token validation failed.", result.FailureReason);
+    }
+
     public void Dispose() => _rsa.Dispose();
 }

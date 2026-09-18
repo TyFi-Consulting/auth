@@ -12,7 +12,7 @@ Every package links to its own README below for a detailed usage example. Start 
 | Package | Purpose |
 |---|---|
 | [`TyFi.Auth.Abstractions`](src/TyFi.Auth.Abstractions/README.md) | `AuthenticatedUser`, `IBearerTokenAuthenticator`, claim-mapping options. No OIDC or hosting code. |
-| [`TyFi.Auth.Jwt`](src/TyFi.Auth.Jwt/README.md) | Provider-agnostic OIDC/JWT **validation** (cached JWKS, RS256-only) — Auth0, Entra, or self-issued tokens are all config-only. |
+| [`TyFi.Auth.Jwt`](src/TyFi.Auth.Jwt/README.md) | Provider-agnostic OIDC/JWT **validation** (cached JWKS, RS256 by default; static-key HS256 mode for self-issued tokens) — Auth0, Entra, or self-issued tokens are all config-only. |
 | [`TyFi.Auth.Functions.Worker`](src/TyFi.Auth.Functions.Worker/README.md) | Isolated-worker middleware for the built-in HTTP model. |
 | [`TyFi.Auth.Functions.AspNetCore`](src/TyFi.Auth.Functions.AspNetCore/README.md) | Isolated-worker middleware for the ASP.NET Core integration HTTP model. |
 | [`TyFi.Auth.Identity.Abstractions`](src/TyFi.Auth.Identity.Abstractions/README.md) | Data contracts and extension points (`IUserAccountStore`, `IEmailSender`, `IRefreshTokenStore`, ...) for the self-hosted identity engine. |
