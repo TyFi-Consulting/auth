@@ -1,0 +1,25 @@
+name: Bi-annual security audit reminder
+
+on:
+  schedule:
+    # 09:00 UTC on Jan 1 and Jul 1.
+    - cron: "0 9 1 1,7 *"
+  workflow_dispatch: {}
+
+permissions:
+  issues: write
+
+jobs:
+  open-reminder:
+    name: Open audit reminder issue
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue create \
+            --repo "${{ github.repository }}" \
+            --title "Bi-annual security audit: TyFi.Auth.Identity" \
+            --label "security" \
+            --body "Time for the scheduled security audit of \`TyFi.Auth.Identity\`/\`TyFi.Auth.Identity.Abstractions\`. Run the \`/security-audit\` prompt (see \`.github/prompts/security-audit.prompt.md\`) with a coding agent, review the findings, and close this issue once the audit is complete (fixes applied or explicitly no findings)."
