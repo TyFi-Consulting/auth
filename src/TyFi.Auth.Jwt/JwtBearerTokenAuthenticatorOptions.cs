@@ -25,6 +25,18 @@ public sealed class JwtBearerTokenAuthenticatorOptions
     /// <summary>Claim-type mapping for subject/name/roles.</summary>
     public Abstractions.AuthClaimMappingOptions ClaimMapping { get; set; } = new();
 
+    /// <summary>
+    /// Base64-encoded symmetric key (HMAC-SHA256, at least 32 bytes). When set, validation uses this
+    /// static key directly instead of OIDC discovery -- for self-issued tokens (e.g.
+    /// <c>TyFi.Auth.Identity</c>) that have no discovery document or JWKS endpoint to fetch a public
+    /// key from. Must be paired with <c>ValidAlgorithms: ["HS256"]</c>; it is not set automatically,
+    /// so a misconfiguration fails closed instead of silently accepting an unintended algorithm.
+    /// </summary>
+    public string? SigningKey { get; set; }
+
     /// <summary>True once both <see cref="Issuer"/> and <see cref="Audience"/> are set.</summary>
     public bool IsConfigured => !string.IsNullOrWhiteSpace(Issuer) && !string.IsNullOrWhiteSpace(Audience);
+
+    /// <summary>True when <see cref="SigningKey"/> is set, so validation should skip OIDC discovery.</summary>
+    public bool UsesStaticSigningKey => !string.IsNullOrWhiteSpace(SigningKey);
 }

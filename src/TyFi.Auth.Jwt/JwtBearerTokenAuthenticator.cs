@@ -55,15 +55,23 @@ public sealed class JwtBearerTokenAuthenticator : IBearerTokenAuthenticator
             ClockSkew = options.ClockSkew,
         };
 
-        var configuration = await _configurationCache.GetConfigurationAsync(options.Issuer!, cancellationToken).ConfigureAwait(false);
-        validationParameters.IssuerSigningKeys = configuration.SigningKeys;
+        if (options.UsesStaticSigningKey)
+        {
+            validationParameters.IssuerSigningKey = new SymmetricSecurityKey(Convert.FromBase64String(options.SigningKey!));
+        }
+        else
+        {
+            var configuration = await _configurationCache.GetConfigurationAsync(options.Issuer!, cancellationToken).ConfigureAwait(false);
+            validationParameters.IssuerSigningKeys = configuration.SigningKeys;
+        }
 
         var result = await _tokenHandler.ValidateTokenAsync(token, validationParameters).ConfigureAwait(false);
-        if (!result.IsValid && result.Exception is SecurityTokenSignatureKeyNotFoundException)
+        if (!options.UsesStaticSigningKey && !result.IsValid && result.Exception is SecurityTokenSignatureKeyNotFoundException)
         {
-            // Key rotation: force a JWKS refresh and retry exactly once before failing.
+            // Key rotation: force a JWKS refresh and retry exactly once before failing. Not
+            // applicable to a static signing key -- there is no rotation/refresh to attempt.
             _configurationCache.RequestRefresh(options.Issuer!);
-            configuration = await _configurationCache.GetConfigurationAsync(options.Issuer!, cancellationToken).ConfigureAwait(false);
+            var configuration = await _configurationCache.GetConfigurationAsync(options.Issuer!, cancellationToken).ConfigureAwait(false);
             validationParameters.IssuerSigningKeys = configuration.SigningKeys;
             result = await _tokenHandler.ValidateTokenAsync(token, validationParameters).ConfigureAwait(false);
         }

@@ -5,9 +5,11 @@
 | Package | Purpose |
 |---|---|
 | `TyFi.Auth.Abstractions` | `AuthenticatedUser`, `IBearerTokenAuthenticator`, claim-mapping options. No OIDC or hosting code. |
-| `TyFi.Auth.Jwt` | Provider-agnostic OIDC/JWT validation (cached JWKS, RS256-only). Implements `IBearerTokenAuthenticator`. |
+| `TyFi.Auth.Jwt` | Provider-agnostic OIDC/JWT validation (cached JWKS, RS256 by default; static-key HS256 mode for self-issued tokens). Implements `IBearerTokenAuthenticator`. |
 | `TyFi.Auth.Functions.Worker` | Isolated-worker middleware for the **built-in** HTTP model (`HttpRequestData`/`HttpResponseData`). |
 | `TyFi.Auth.Functions.AspNetCore` | Isolated-worker middleware for the **ASP.NET Core integration** HTTP model (`HttpRequest`/`IActionResult`, `ConfigureFunctionsWebApplication()`). |
+| `TyFi.Auth.Identity.Abstractions` | Data contracts and extension points (`IUserAccountStore`, `IEmailSender`, `IRefreshTokenStore`, `IAuthenticationService`, ...) for the self-hosted identity engine. |
+| `TyFi.Auth.Identity` | Self-hosted, passwordless (email one-time-code) authentication: registration, login, refresh-token rotation, lockout. No third-party identity provider required. |
 | `TyFi.Auth.EntraExternalId` | The `OnOtpSend` custom authentication extension endpoint: callback validation + Maileroo sender. Entra-specific by design. |
 
 Pick **one** of the two host packages, matching how your Function app calls
@@ -48,6 +50,46 @@ closed (500 "Authorization policy missing") rather than silently allowing anonym
 Read the caller from `context.GetAuthenticatedUser()` (Functions.Worker) or
 `httpContext.GetAuthenticatedUser()` (Functions.AspNetCore, via
 `context.GetHttpContext()`).
+
+## Self-hosted identity (no third-party provider)
+
+```bash
+dotnet add package TyFi.Auth.Identity
+```
+
+`Program.cs` -- implement `IUserAccountStore`, `IEmailSender`, `IRefreshTokenStore` against your own
+storage/mail sender, then:
+
+```csharp
+builder.Services
+    .AddAuthentication<YourUserAccountStore, YourEmailSender, YourRefreshTokenStore>(builder.Configuration)
+    .AddRoles("Admin", "User")
+    .AddPermissions(
+        permissions: ["WidgetRead", "WidgetWrite"],
+        assignments: new Dictionary<string, string[]> { ["Admin"] = ["WidgetRead", "WidgetWrite"], ["User"] = ["WidgetRead"] });
+```
+
+Config -- the issuer (`TyFi.Auth.Identity`) and validator (`TyFi.Auth.Jwt`) must agree on the signing
+key and claim-mapping section, since a self-issued token has no discovery document/JWKS endpoint:
+
+```jsonc
+{
+  "Auth:Identity:Issuer": "https://your-app",
+  "Auth:Identity:Audience": "api://your-app-id",
+  "Auth:Identity:SigningKey": "<base64, 32+ bytes, HMAC-SHA256>",
+  "Auth:Identity:HashingKey": "<base64, 32+ bytes, HMAC-SHA256, different key than SigningKey>",
+
+  "Auth:Jwt:Issuer": "https://your-app",
+  "Auth:Jwt:Audience": "api://your-app-id",
+  "Auth:Jwt:SigningKey": "<the same value as Auth:Identity:SigningKey above>",
+  "Auth:Jwt:ValidAlgorithms:0": "HS256"
+}
+```
+
+Call `IAuthenticationService` from your own login/register/refresh/logout endpoints -- the library
+never touches your request/response shape, so your endpoints own deserialization and the response
+body entirely. See [`TyFi.Auth.Identity`'s README](../src/TyFi.Auth.Identity/README.md) for a full
+endpoint example and design notes (passwordless, enumeration-safe, atomic refresh rotation).
 
 ## Hosting the OnOtpSend endpoint (one app, its own tenant)
 

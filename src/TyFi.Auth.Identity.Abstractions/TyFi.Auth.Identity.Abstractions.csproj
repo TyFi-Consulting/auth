@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>TyFi.Auth.Identity.Abstractions</PackageId>
+    <Description>Self-hosted, passwordless (email one-time-code) authentication abstractions: IUserAccountStore, IEmailSender, IRefreshTokenStore, IClaimsEnricher, and the result/option types consumed by TyFi.Auth.Identity. No storage, email, or token-signing code -- reference TyFi.Auth.Identity for the implementation.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TyFi.Auth.Abstractions\TyFi.Auth.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>
