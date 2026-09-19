@@ -6,6 +6,8 @@ namespace TyFi.Auth.Identity.Abstractions;
 /// </summary>
 public sealed record LogoutResult
 {
+    // Private and empty: blocks public construction so only the Succeeded singleton below can
+    // ever exist, guaranteeing every caller observes the exact same always-succeeds instance.
     private LogoutResult()
     {
     }

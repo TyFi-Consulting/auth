@@ -25,8 +25,35 @@ public static class AuthenticationServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(configuration);
 
-        services.Configure<AuthIdentityOptions>(configuration.GetSection(AuthIdentityOptions.SectionName));
-        services.Configure<AuthClaimMappingOptions>(configuration.GetSection(AuthClaimMappingOptions.SectionName));
+        // ValidateOnStart fails the host at startup with a clear message when a signing/hashing key is
+        // missing or too short, instead of a collaborator throwing on the first real request.
+        static bool isAtLeast32Bytes(string key)
+        {
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                return false;
+            }
+
+            try
+            {
+                return Convert.FromBase64String(key).Length >= 32;
+            }
+            catch (FormatException)
+            {
+                return false;
+            }
+        }
+
+        services.AddOptions<AuthIdentityOptions>()
+            .Bind(configuration.GetSection(AuthIdentityOptions.SectionName))
+            .Validate(o => isAtLeast32Bytes(o.SigningKey), "Auth:Identity:SigningKey must be a base64 value decoding to at least 32 bytes.")
+            .Validate(o => isAtLeast32Bytes(o.HashingKey), "Auth:Identity:HashingKey must be a base64 value decoding to at least 32 bytes.")
+            .ValidateOnStart();
+
+        // Shares TyFi.Auth.Jwt's own claim-mapping section rather than a separate one: the issuer
+        // (here) and the validator (TyFi.Auth.Jwt) must agree on claim-type names, or issued tokens
+        // can carry claims the validator doesn't recognize and fail authorization after validation.
+        services.Configure<AuthClaimMappingOptions>(configuration.GetSection("Auth:Jwt:ClaimMapping"));
         services.TryAddSingleton<IClaimsEnricher, NoOpClaimsEnricher>();
 
         services.AddScoped<IUserAccountStore, TUserAccountStore>();
@@ -43,5 +70,22 @@ public static class AuthenticationServiceCollectionExtensions
         services.AddScoped<IAuthenticationService, AuthenticationService>();
 
         return new TyFiAuthenticationBuilder(services);
+    }
+
+    private static bool IsAtLeast32Bytes(string key)
+    {
+        if (string.IsNullOrWhiteSpace(key))
+        {
+            return false;
+        }
+
+        try
+        {
+            return Convert.FromBase64String(key).Length >= 32;
+        }
+        catch (FormatException)
+        {
+            return false;
+        }
     }
 }

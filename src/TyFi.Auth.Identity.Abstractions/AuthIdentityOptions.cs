@@ -15,6 +15,13 @@ public sealed class AuthIdentityOptions
     /// <summary>Maximum incorrect attempts allowed against one outstanding code. Default 5.</summary>
     public int OtpMaxAttempts { get; set; } = 5;
 
+    /// <summary>
+    /// Minimum time between sending a new code to the same account, whether via registration or a
+    /// login-code request. Rejected resend attempts within this window still return the same
+    /// enumeration-safe result -- they just don't trigger another email. Default 60 seconds.
+    /// </summary>
+    public TimeSpan MinimumCodeResendInterval { get; set; } = TimeSpan.FromSeconds(60);
+
     /// <summary>Consecutive failed logins before the account is temporarily locked out. Default 5.</summary>
     public int MaxFailedLoginAttemptsBeforeLockout { get; set; } = 5;
 

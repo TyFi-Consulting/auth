@@ -7,7 +7,11 @@ namespace TyFi.Auth.Identity.Abstractions;
 /// </summary>
 public interface IAuthenticationService
 {
-    /// <summary>Creates a new account for the given email and sends its first verification code.</summary>
+    /// <summary>
+    /// Creates a new account for the given email (or, if one already exists, does nothing extra) and
+    /// sends a one-time code. Always returns the same result regardless of whether the account already
+    /// existed, so this endpoint can never be used to enumerate registered accounts.
+    /// </summary>
     Task<RegisterResult> RegisterAsync(string email, CancellationToken cancellationToken);
 
     /// <summary>

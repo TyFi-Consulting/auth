@@ -3,14 +3,6 @@ namespace TyFi.Auth.Identity.Abstractions.Tests;
 public sealed class AuthOutcomeStatusCodesTests
 {
     [Theory]
-    [InlineData(RegisterOutcome.Started, 202)]
-    [InlineData(RegisterOutcome.AlreadyRegistered, 409)]
-    public void ForRegister_MapsOutcomeToExpectedStatusCode(RegisterOutcome outcome, int expected)
-    {
-        Assert.Equal(expected, AuthOutcomeStatusCodes.ForRegister(outcome));
-    }
-
-    [Theory]
     [InlineData(VerifyCodeOutcome.Succeeded, 200)]
     [InlineData(VerifyCodeOutcome.InvalidCode, 400)]
     [InlineData(VerifyCodeOutcome.Expired, 400)]

@@ -21,5 +21,4 @@ jobs:
           gh issue create \
             --repo "${{ github.repository }}" \
             --title "Bi-annual security audit: TyFi.Auth.Identity" \
-            --label "security" \
             --body "Time for the scheduled security audit of \`TyFi.Auth.Identity\`/\`TyFi.Auth.Identity.Abstractions\`. Run the \`/security-audit\` prompt (see \`.github/prompts/security-audit.prompt.md\`) with a coding agent, review the findings, and close this issue once the audit is complete (fixes applied or explicitly no findings)."

@@ -16,6 +16,12 @@ public interface IRefreshTokenStore
     /// <summary>Marks every token in the given family as revoked (logout, or reuse-of-rotated-token detection).</summary>
     Task RevokeFamilyAsync(string familyId, CancellationToken cancellationToken);
 
-    /// <summary>Marks the given token as rotated (exchanged for a new one).</summary>
-    Task MarkRotatedAsync(string tokenHash, CancellationToken cancellationToken);
+    /// <summary>
+    /// Atomically rotates a refresh token: if <paramref name="oldTokenHash"/> is still active (not
+    /// expired, rotated, or revoked), marks it rotated and persists <paramref name="newToken"/> as its
+    /// replacement in the same operation. Returns <see langword="false"/>, persisting nothing, if
+    /// another request has already rotated, revoked, or outlasted <paramref name="oldTokenHash"/>
+    /// first -- callers must treat that as reuse (a token-theft signal), never retry blindly.
+    /// </summary>
+    Task<bool> TryRotateAsync(string oldTokenHash, RefreshTokenRecord newToken, CancellationToken cancellationToken);
 }

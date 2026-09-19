@@ -8,6 +8,8 @@ namespace TyFi.Auth.Identity.Abstractions;
 /// </summary>
 public sealed record RequestLoginCodeResult
 {
+    // Private and empty: blocks public construction so only the Sent singleton below can ever
+    // exist, guaranteeing every caller observes the exact same enumeration-safe instance.
     private RequestLoginCodeResult()
     {
     }

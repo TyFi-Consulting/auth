@@ -7,14 +7,6 @@ namespace TyFi.Auth.Identity.Abstractions;
 /// </summary>
 public static class AuthOutcomeStatusCodes
 {
-    /// <summary>Status code for a <see cref="RegisterResult"/> outcome.</summary>
-    public static int ForRegister(RegisterOutcome outcome) => outcome switch
-    {
-        RegisterOutcome.Started => 202,
-        RegisterOutcome.AlreadyRegistered => 409,
-        _ => 500,
-    };
-
     /// <summary>Status code for a <see cref="VerifyCodeResult"/> outcome.</summary>
     public static int ForVerifyCode(VerifyCodeOutcome outcome) => outcome switch
     {

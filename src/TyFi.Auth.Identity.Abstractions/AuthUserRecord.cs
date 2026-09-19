@@ -36,4 +36,14 @@ public sealed class AuthUserRecord
 
     /// <summary>When the account last completed a successful login, or null if never.</summary>
     public DateTimeOffset? LastLoginUtc { get; set; }
+
+    /// <summary>When the current <see cref="PendingCodeHash"/> (if any) was sent, used to throttle resends.</summary>
+    public DateTimeOffset? LastCodeSentUtc { get; set; }
+
+    /// <summary>
+    /// Opaque optimistic-concurrency token, owned entirely by the store implementation -- callers
+    /// never set it. Lets <see cref="IUserAccountStore.UpdateAsync"/> detect and reject a lost race
+    /// between two concurrent reads of the same account (see its documentation for the contract).
+    /// </summary>
+    public string? ConcurrencyStamp { get; set; }
 }
