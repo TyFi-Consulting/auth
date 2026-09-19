@@ -5,9 +5,10 @@ rotation with reuse detection, account lockout, and configurable role/permission
 No external identity provider required -- your project supplies where users and refresh tokens are
 stored and how emails are sent; this package supplies the orchestration and token issuance.
 
-Access tokens are signed JWTs validated by the existing provider-agnostic `TyFi.Auth.Jwt` package with
-**no changes** -- the claim types you configure here (via `Auth:ClaimMapping` / `AuthClaimMappingOptions`,
-shared with `TyFi.Auth.Abstractions`) are exactly what `TyFi.Auth.Jwt` already expects.
+Access tokens are signed JWTs validated by the existing provider-agnostic `TyFi.Auth.Jwt` package -- the
+claim types you configure here (via `Auth:Jwt:ClaimMapping` / `AuthClaimMappingOptions`, shared with
+`TyFi.Auth.Abstractions`) are exactly what `TyFi.Auth.Jwt` already expects, since both packages bind the
+same configuration section.
 
 ## Install
 
@@ -48,9 +49,14 @@ source control):
   "Auth:Identity:Issuer": "https://your-app",
   "Auth:Identity:Audience": "api://your-app-id",
   "Auth:Identity:SigningKey": "<base64, 32+ bytes, HMAC-SHA256>",
-  "Auth:Identity:HashingKey": "<base64, 32+ bytes, HMAC-SHA256, different key than SigningKey>"
+  "Auth:Identity:HashingKey": "<base64, 32+ bytes, HMAC-SHA256, different key than SigningKey>",
+  "Auth:Identity:MinimumCodeResendInterval": "00:01:00"
 }
 ```
+
+`MinimumCodeResendInterval` (default 60s) rate-limits how often a login code can be re-sent to the same
+account -- both `RequestLoginCodeAsync` and `RegisterAsync` silently skip sending a new email within the
+cooldown window (still returning the same success result, so this can't be probed from the outside).
 
 Issued access tokens are signed HS256 JWTs with a symmetric key -- they have no discovery document or
 JWKS endpoint. To validate them with `TyFi.Auth.Jwt`, point it at the *same* signing key via its static-key
@@ -77,16 +83,19 @@ public sealed record RegisterRequest(string Email); // your own request shape, h
 public async Task<HttpResponseData> Register([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req, CancellationToken ct)
 {
     var body = await req.ReadFromJsonAsync<RegisterRequest>(ct);
-    var result = await _auth.RegisterAsync(body!.Email, ct);
+    await _auth.RegisterAsync(body!.Email, ct); // always succeeds the same way -- see below
 
-    var response = req.CreateResponse((HttpStatusCode)AuthOutcomeStatusCodes.ForRegister(result.Outcome));
-    await response.WriteAsJsonAsync(new { outcome = result.Outcome.ToString() }, response.StatusCode, ct);
+    var response = req.CreateResponse(HttpStatusCode.Accepted);
+    await response.WriteAsJsonAsync(new { outcome = "Started" }, HttpStatusCode.Accepted, ct);
     return response;
 }
 ```
 
-Every failure mode (wrong code, expired token, locked-out account, reused refresh token, ...) is a value
-on the returned result, never an exception -- your endpoint decides what status code and body to send.
+`RegisterAsync` always returns the same `RegisterResult.Started` singleton and always sends a login code,
+whether the account is new or already existed -- so this endpoint can never be used to enumerate
+registered emails. `VerifyCodeAsync`/`RefreshAsync`/`LogoutAsync` still return a value for every failure
+mode (wrong code, expired code, locked-out account, reused refresh token, ...), never an exception --
+`AuthOutcomeStatusCodes.ForVerifyCode`/`.ForRefresh` map those to HTTP status codes for you.
 
 ## Design notes
 
