@@ -18,6 +18,7 @@ public sealed class AuthorizationAspNetCoreMiddleware : IFunctionsWorkerMiddlewa
 {
     private readonly IAuthorizationRequirementResolver _requirementResolver;
     private readonly IBearerTokenAuthenticator _authenticator;
+    private readonly IAuthorizationRoleNameResolver _roleNameResolver;
     private readonly IProblemResultFactory _problemResultFactory;
     private readonly ILogger<AuthorizationAspNetCoreMiddleware> _logger;
 
@@ -25,11 +26,13 @@ public sealed class AuthorizationAspNetCoreMiddleware : IFunctionsWorkerMiddlewa
     public AuthorizationAspNetCoreMiddleware(
         IAuthorizationRequirementResolver requirementResolver,
         IBearerTokenAuthenticator authenticator,
+        IAuthorizationRoleNameResolver roleNameResolver,
         IProblemResultFactory problemResultFactory,
         ILogger<AuthorizationAspNetCoreMiddleware> logger)
     {
         _requirementResolver = requirementResolver ?? throw new ArgumentNullException(nameof(requirementResolver));
         _authenticator = authenticator ?? throw new ArgumentNullException(nameof(authenticator));
+        _roleNameResolver = roleNameResolver ?? throw new ArgumentNullException(nameof(roleNameResolver));
         _problemResultFactory = problemResultFactory ?? throw new ArgumentNullException(nameof(problemResultFactory));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
@@ -54,7 +57,7 @@ public sealed class AuthorizationAspNetCoreMiddleware : IFunctionsWorkerMiddlewa
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(requirement.RequiredPolicy))
+        if (!requirement.RequireAuthenticatedOnly && string.IsNullOrWhiteSpace(requirement.RequiredPolicy))
         {
             _logger.LogError("Function {FunctionName} has no authorization policy.", context.FunctionDefinition.Name);
             context.GetInvocationResult().Value = _problemResultFactory.Create(HttpStatusCode.InternalServerError, "Authorization policy missing");
@@ -81,10 +84,14 @@ public sealed class AuthorizationAspNetCoreMiddleware : IFunctionsWorkerMiddlewa
             return;
         }
 
-        if (!authenticationResult.User.Roles.Contains(requirement.RequiredPolicy))
+        if (!requirement.RequireAuthenticatedOnly)
         {
-            context.GetInvocationResult().Value = _problemResultFactory.Create(HttpStatusCode.Forbidden, "Insufficient permission");
-            return;
+            var roleName = _roleNameResolver.ResolveRoleName(requirement.RequiredPolicy!);
+            if (!authenticationResult.User.Roles.Contains(roleName))
+            {
+                context.GetInvocationResult().Value = _problemResultFactory.Create(HttpStatusCode.Forbidden, "Insufficient permission");
+                return;
+            }
         }
 
         httpContext.Items[HttpContextAuthenticationExtensions.UserContextItem] = authenticationResult.User;

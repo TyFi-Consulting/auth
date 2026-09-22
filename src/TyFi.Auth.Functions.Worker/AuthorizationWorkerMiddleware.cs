@@ -15,6 +15,7 @@ public sealed class AuthorizationWorkerMiddleware : IFunctionsWorkerMiddleware
 {
     private readonly IAuthorizationRequirementResolver _requirementResolver;
     private readonly IBearerTokenAuthenticator _authenticator;
+    private readonly IAuthorizationRoleNameResolver _roleNameResolver;
     private readonly IProblemResponseWriter _problemResponseWriter;
     private readonly ILogger<AuthorizationWorkerMiddleware> _logger;
 
@@ -22,11 +23,13 @@ public sealed class AuthorizationWorkerMiddleware : IFunctionsWorkerMiddleware
     public AuthorizationWorkerMiddleware(
         IAuthorizationRequirementResolver requirementResolver,
         IBearerTokenAuthenticator authenticator,
+        IAuthorizationRoleNameResolver roleNameResolver,
         IProblemResponseWriter problemResponseWriter,
         ILogger<AuthorizationWorkerMiddleware> logger)
     {
         _requirementResolver = requirementResolver ?? throw new ArgumentNullException(nameof(requirementResolver));
         _authenticator = authenticator ?? throw new ArgumentNullException(nameof(authenticator));
+        _roleNameResolver = roleNameResolver ?? throw new ArgumentNullException(nameof(roleNameResolver));
         _problemResponseWriter = problemResponseWriter ?? throw new ArgumentNullException(nameof(problemResponseWriter));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
@@ -48,7 +51,7 @@ public sealed class AuthorizationWorkerMiddleware : IFunctionsWorkerMiddleware
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(requirement.RequiredPolicy))
+        if (!requirement.RequireAuthenticatedOnly && string.IsNullOrWhiteSpace(requirement.RequiredPolicy))
         {
             _logger.LogError("Function {FunctionName} has no authorization policy.", context.FunctionDefinition.Name);
             context.GetInvocationResult().Value = await _problemResponseWriter.WriteAsync(
@@ -79,11 +82,15 @@ public sealed class AuthorizationWorkerMiddleware : IFunctionsWorkerMiddleware
             return;
         }
 
-        if (!authenticationResult.User.Roles.Contains(requirement.RequiredPolicy))
+        if (!requirement.RequireAuthenticatedOnly)
         {
-            context.GetInvocationResult().Value = await _problemResponseWriter.WriteAsync(
-                request, HttpStatusCode.Forbidden, "Insufficient permission", context.CancellationToken).ConfigureAwait(false);
-            return;
+            var roleName = _roleNameResolver.ResolveRoleName(requirement.RequiredPolicy!);
+            if (!authenticationResult.User.Roles.Contains(roleName))
+            {
+                context.GetInvocationResult().Value = await _problemResponseWriter.WriteAsync(
+                    request, HttpStatusCode.Forbidden, "Insufficient permission", context.CancellationToken).ConfigureAwait(false);
+                return;
+            }
         }
 
         context.Items[FunctionContextAuthenticationExtensions.UserContextItem] = authenticationResult.User;

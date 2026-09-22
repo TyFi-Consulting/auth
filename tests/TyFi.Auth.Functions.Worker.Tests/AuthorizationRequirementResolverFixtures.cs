@@ -23,4 +23,17 @@ public sealed class AuthorizationRequirementResolverFixtures
     public void FunctionWithNoAttributes()
     {
     }
+
+    [Function("AuthenticatedOnly")]
+    [AuthorizeAuthenticated]
+    public void FunctionRequiringAuthenticatedOnly()
+    {
+    }
+
+    [Function("AuthenticatedOnlyWithPolicy")]
+    [Authorize("sessions:read")]
+    [AuthorizeAuthenticated]
+    public void FunctionWithBothPolicyAndAuthenticatedOnly()
+    {
+    }
 }

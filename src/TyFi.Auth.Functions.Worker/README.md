@@ -17,6 +17,15 @@ builder.UseMiddleware<AuthorizationWorkerMiddleware>();
 
 Read the authenticated caller via `context.GetAuthenticatedUser()`.
 
+Use `[AuthorizeAuthenticated]` instead of `[Authorize(Policy = "...")]` for an endpoint that only
+needs a signed-in caller, with no specific role required (e.g. a "who am I" check that must work
+for a caller with no role assigned yet).
+
+When role names are runtime configuration rather than compile-time literals (an attribute argument
+must be a literal), register your own `IAuthorizationRoleNameResolver` after
+`AddTyFiAuthFunctionsWorker()` to translate a policy name to the configured role string before it's
+compared against the caller's roles.
+
 Use `TyFi.Auth.Functions.AspNetCore` instead if your Function app calls
 `builder.ConfigureFunctionsWebApplication()`. See the repository
 [README](../../README.md) and [docs/INTEGRATION.md](../../docs/INTEGRATION.md) for full details.

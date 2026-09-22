@@ -47,6 +47,30 @@ public sealed class AuthorizationRequirementResolverTests
 
         Assert.False(requirement.AllowAnonymous);
         Assert.Null(requirement.RequiredPolicy);
+        Assert.False(requirement.RequireAuthenticatedOnly);
+    }
+
+    [Fact]
+    public void Resolve_RequiresAuthenticatedOnly_WhenAttributePresentWithNoPolicy()
+    {
+        var resolver = new AuthorizationRequirementResolver();
+
+        var requirement = resolver.Resolve(CreateContext(nameof(AuthorizationRequirementResolverFixtures.FunctionRequiringAuthenticatedOnly)));
+
+        Assert.False(requirement.AllowAnonymous);
+        Assert.Null(requirement.RequiredPolicy);
+        Assert.True(requirement.RequireAuthenticatedOnly);
+    }
+
+    [Fact]
+    public void Resolve_PolicyTakesPrecedence_WhenBothPolicyAndAuthenticatedOnlyPresent()
+    {
+        var resolver = new AuthorizationRequirementResolver();
+
+        var requirement = resolver.Resolve(CreateContext(nameof(AuthorizationRequirementResolverFixtures.FunctionWithBothPolicyAndAuthenticatedOnly)));
+
+        Assert.Equal("sessions:read", requirement.RequiredPolicy);
+        Assert.False(requirement.RequireAuthenticatedOnly);
     }
 
     [Fact]
