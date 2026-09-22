@@ -34,6 +34,19 @@ public sealed class AuthorizationWorkerMiddleware : IFunctionsWorkerMiddleware
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
+    /// <summary>
+    /// Backward-compatible overload for consumers instantiating this middleware directly without a
+    /// role-name resolver; defaults to <see cref="DefaultAuthorizationRoleNameResolver"/>.
+    /// </summary>
+    public AuthorizationWorkerMiddleware(
+        IAuthorizationRequirementResolver requirementResolver,
+        IBearerTokenAuthenticator authenticator,
+        IProblemResponseWriter problemResponseWriter,
+        ILogger<AuthorizationWorkerMiddleware> logger)
+        : this(requirementResolver, authenticator, new DefaultAuthorizationRoleNameResolver(), problemResponseWriter, logger)
+    {
+    }
+
     /// <inheritdoc />
     public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
     {

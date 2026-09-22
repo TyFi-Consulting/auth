@@ -30,6 +30,9 @@ public sealed class AuthorizationRequirementResolver : IAuthorizationRequirement
             ?? type?.GetCustomAttribute<AuthorizeAttribute>();
         var authenticatedOnly = method?.GetCustomAttribute<AuthorizeAuthenticatedAttribute>() is not null
             || type?.GetCustomAttribute<AuthorizeAuthenticatedAttribute>() is not null;
-        return new AuthorizationRequirement(allowAnonymous, authorize?.Policy, authenticatedOnly && authorize?.Policy is null);
+        return new AuthorizationRequirement(allowAnonymous, authorize?.Policy)
+        {
+            RequireAuthenticatedOnly = authenticatedOnly && authorize?.Policy is null,
+        };
     }
 }

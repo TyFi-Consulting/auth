@@ -37,6 +37,19 @@ public sealed class AuthorizationAspNetCoreMiddleware : IFunctionsWorkerMiddlewa
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
+    /// <summary>
+    /// Backward-compatible overload for consumers instantiating this middleware directly without a
+    /// role-name resolver; defaults to <see cref="DefaultAuthorizationRoleNameResolver"/>.
+    /// </summary>
+    public AuthorizationAspNetCoreMiddleware(
+        IAuthorizationRequirementResolver requirementResolver,
+        IBearerTokenAuthenticator authenticator,
+        IProblemResultFactory problemResultFactory,
+        ILogger<AuthorizationAspNetCoreMiddleware> logger)
+        : this(requirementResolver, authenticator, new DefaultAuthorizationRoleNameResolver(), problemResultFactory, logger)
+    {
+    }
+
     /// <inheritdoc />
     public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
     {
