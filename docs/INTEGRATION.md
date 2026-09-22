@@ -51,6 +51,30 @@ Read the caller from `context.GetAuthenticatedUser()` (Functions.Worker) or
 `httpContext.GetAuthenticatedUser()` (Functions.AspNetCore, via
 `context.GetHttpContext()`).
 
+For an endpoint that needs a signed-in caller but no specific role (e.g. a "who am I" check that
+must work even for a caller with no role assigned yet), use `[AuthorizeAuthenticated]` instead of
+`[Authorize(Policy = "...")]`. If a function carries both, the explicit policy wins and
+`[AuthorizeAuthenticated]` is ignored.
+
+`[Authorize(Policy = "...")]`'s argument must be a compile-time constant, but many consumers'
+actual role names are runtime configuration (Terraform, App Configuration, etc.), not literals.
+Register your own `IAuthorizationRoleNameResolver` (after `AddTyFiAuthFunctionsAspNetCore()` /
+`AddTyFiAuthFunctionsWorker()`, so it overrides the pass-through default) to translate a policy
+name to the actual configured role string before the middleware compares it against the caller's
+roles:
+
+```csharp
+public sealed class ConfiguredRoleNameResolver(IOptions<MyRoleNamesOptions> roleNames) : IAuthorizationRoleNameResolver
+{
+    public string ResolveRoleName(string policy) => policy switch
+    {
+        "Admin" => roleNames.Value.Admin,
+        "Therapist" => roleNames.Value.Therapist,
+        _ => policy,
+    };
+}
+```
+
 ## Self-hosted identity (no third-party provider)
 
 ```bash

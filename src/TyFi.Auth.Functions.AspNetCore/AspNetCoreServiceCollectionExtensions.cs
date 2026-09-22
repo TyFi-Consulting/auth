@@ -9,12 +9,13 @@ namespace TyFi.Auth.Functions.AspNetCore;
 /// </summary>
 public static class AspNetCoreServiceCollectionExtensions
 {
-    /// <summary>Registers <see cref="IAuthorizationRequirementResolver"/> and <see cref="IProblemResultFactory"/>.</summary>
+    /// <summary>Registers <see cref="IAuthorizationRequirementResolver"/>, <see cref="IAuthorizationRoleNameResolver"/>, and <see cref="IProblemResultFactory"/>.</summary>
     public static IServiceCollection AddTyFiAuthFunctionsAspNetCore(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
 
         services.AddSingleton<IAuthorizationRequirementResolver, AuthorizationRequirementResolver>();
+        services.AddSingleton<IAuthorizationRoleNameResolver, DefaultAuthorizationRoleNameResolver>();
         services.AddSingleton<IProblemResultFactory, JsonProblemResultFactory>();
         return services;
     }

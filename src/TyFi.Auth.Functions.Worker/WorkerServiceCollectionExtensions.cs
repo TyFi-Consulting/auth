@@ -8,12 +8,13 @@ namespace TyFi.Auth.Functions.Worker;
 /// </summary>
 public static class WorkerServiceCollectionExtensions
 {
-    /// <summary>Registers <see cref="IAuthorizationRequirementResolver"/> and <see cref="IProblemResponseWriter"/>.</summary>
+    /// <summary>Registers <see cref="IAuthorizationRequirementResolver"/>, <see cref="IAuthorizationRoleNameResolver"/>, and <see cref="IProblemResponseWriter"/>.</summary>
     public static IServiceCollection AddTyFiAuthFunctionsWorker(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
 
         services.AddSingleton<IAuthorizationRequirementResolver, AuthorizationRequirementResolver>();
+        services.AddSingleton<IAuthorizationRoleNameResolver, DefaultAuthorizationRoleNameResolver>();
         services.AddSingleton<IProblemResponseWriter, JsonProblemResponseWriter>();
         return services;
     }
